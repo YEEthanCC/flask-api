@@ -25,13 +25,13 @@ def search_user_route():
     data = request.get_json()
     return get_users_by_name(data['fullname'])
 
-@user.route('/<id>', methods=['GET'])
+@user.route('/<public_id>', methods=['GET'])
 @jwt_required()
-def get_user_route(id):
+def get_user_route(public_id):
     user_id = get_jwt_identity()
     if not user_id:
         return jsonify({'message': 'Token is missing!'})
-    return get_user(id)
+    return get_user(public_id)
 
 
 @user.route('/signup', methods=['POST'])
@@ -44,24 +44,24 @@ def signin_route():
     data = request.get_json()
     if not data or not data['fullname'] or not data['pwd']:
         return jsonify({'message': 'Missing username or password'})
-    user_id = get_user_id(data['fullname'], data['pwd'])
+    user_id = get_public_id(data['fullname'], data['pwd'])
     if not user_id:
         return jsonify({'message': 'Incorrect username or password'})
     return jsonify(access_token=create_access_token(identity=user_id))
 
-@user.route('/<id>', methods=['DELETE'])
+@user.route('/<public_id>', methods=['DELETE'])
 @jwt_required()
-def delete_user_route(id):
+def delete_user_route(public_id):
     user_id = get_jwt_identity()
     if not user_id:
         return jsonify({'message': 'Token is missing!'})
-    return delete_user(id)
+    return delete_user(public_id)
 
-@user.route('/<id>', methods=['PUT'])
+@user.route('/<public_id>', methods=['PUT'])
 @jwt_required()
-def update_user_route(id):
+def update_user_route(public_id):
     user_id = get_jwt_identity()
     if not user_id:
         return jsonify({'message': 'Token is missing!'})
     data = request.get_json()
-    return udpate_user(id, data['fullname'], data['pwd'])
+    return udpate_user(public_id, data['fullname'], data['pwd'])
