@@ -3,12 +3,20 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app.models import User
 import datetime
 from app import db
-from flask import jsonify, make_response
-import jwt
-from app import app
+from flask import jsonify
+from sqlalchemy import asc, desc
 
-def get_all_users():
-    users = User.query.all()
+def get_all_users(page, per_page, sort_by, order):
+    query = User.query
+    if order == "asc" and sort_by:
+        query = query.order_by(asc(sort_by))
+    elif order == "desc" and sort_by:
+        query =  query.order_by(desc(sort_by))
+    users = None
+    if not page or not per_page:
+        users = query.all()
+    else:
+        users = query.paginate(page=int(page), per_page=int(per_page))
     output = []
     for user in users:
         user_data = {}
@@ -17,6 +25,7 @@ def get_all_users():
         user_data['created_at'] = user.created_at
         user_data['updated_at'] = user.updated_at
         output.append(user_data)
+    
     return jsonify({'users': output})
 
 def get_users_by_name(fullname):

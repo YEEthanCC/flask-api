@@ -14,7 +14,11 @@ def list_users_route():
     user_id = get_jwt_identity()
     if not user_id:
         return jsonify({'message': 'Token is missing!'})
-    return get_all_users()
+    page = request.args.get('page', None)
+    per_page = request.args.get('per_page', None)
+    sort_by = request.args.get('sort_by', None)
+    order = request.args.get('order', None)
+    return get_all_users(page, per_page, sort_by, order)
 
 @user.route('/search', methods=['GET'])
 @jwt_required()
