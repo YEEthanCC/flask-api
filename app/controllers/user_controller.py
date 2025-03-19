@@ -43,7 +43,7 @@ def get_users_by_name(fullname):
 def get_user(public_id):
     user = User.query.filter_by(public_id=public_id).first()
     if not user:
-        return jsonify({'message': 'No user found!'})
+        return jsonify({'message': 'No user found!'}), 404
     user_data = {}
     user_data['public_id'] = user.public_id
     user_data['fullname'] = user.fullname
@@ -70,15 +70,15 @@ def get_public_id(fullname, pwd):
 def delete_user(public_id):
     user = User.query.filter_by(public_id=public_id).first()
     if not user:
-        return jsonify({'message': 'No user found!'})
+        return jsonify({'message': 'No user found!'}), 404
     db.session.delete(user)
     db.session.commit()
-    return jsonify({'message': 'The user has been deleted!'})
+    return jsonify({'message': 'The user has been deleted!'}), 200
 
 def udpate_user(public_id, fullname, pwd):
     user = User.query.filter_by(public_id=public_id).first()
     if not user:
-        return jsonify({'message': 'No user found!'})
+        return jsonify({'message': 'No user found!'}), 404
     user.fullname = fullname
     user.pwd = generate_password_hash(pwd, method='pbkdf2:sha256')
     user.updated_at = datetime.datetime.now() 

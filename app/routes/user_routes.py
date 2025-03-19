@@ -26,8 +26,8 @@ def search_user_route():
     user_id = get_jwt_identity()
     if not user_id:
         return jsonify({'message': 'Token is missing!'})
-    data = request.get_json()
-    return get_users_by_name(data['fullname'])
+    fullname = request.args.get('fullname', None)
+    return get_users_by_name(fullname)
 
 @user.route('/<public_id>', methods=['GET'])
 @jwt_required()
@@ -47,11 +47,11 @@ def signup_route():
 def signin_route():
     data = request.get_json()
     if not data or not data['fullname'] or not data['pwd']:
-        return jsonify({'message': 'Missing username or password'})
+        return jsonify({'message': 'Missing username or password'}), 401
     user_id = get_public_id(data['fullname'], data['pwd'])
     if not user_id:
-        return jsonify({'message': 'Incorrect username or password'})
-    return jsonify(access_token=create_access_token(identity=user_id))
+        return jsonify({'message': 'Incorrect username or password'}),401
+    return jsonify(access_token=create_access_token(identity=user_id)), 200
 
 @user.route('/<public_id>', methods=['DELETE'])
 @jwt_required()
