@@ -4,6 +4,7 @@ import os
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from dotenv import load_dotenv
+from app.events import socketio
 
 load_dotenv()  
 
@@ -24,3 +25,5 @@ from app import routes
 
 with app.app_context():
     db.create_all()
+
+socketio.init_app(app, async_mode="eventlet")
